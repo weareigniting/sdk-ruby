@@ -48,7 +48,23 @@ module AuthorizeNet::Reporting
       set_fields({:first_settlement_date => from_date, :last_settlement_date => to_date, :include_statistics => include_stats})
       make_request
     end
-    
+
+    # Sets up and submits a getUnsettledTransactionListRequest transaction. If this transaction has already been
+    # run, this method will return nil. Otherwise it will return an AuthorizeNet::Reporting::Response object. The
+    # response object will have an array of Batch objects available via its batch_list method if
+    # the request was successful.
+    #
+    #
+    # Typical usage:
+    #
+    #   response = transaction.get_unsettled_batch_list
+    #   batches = response.batch_list if response.success?
+    #
+    def get_unsettled_batch_list
+      @type = Type::REPORT_GET_UNSETTLED_BATCH_LIST
+      make_request
+    end
+
     # Sets up and submits a getTransactionListRequest transaction. If this transaction has already been
     # run, this method will return nil. Otherwise it will return an AuthorizeNet::Reporting::Response object. The
     # response object will have an array of TransactionDetail objects available via its transactions method if

@@ -36,6 +36,7 @@ module AuthorizeNet
       CIM_UPDATE_SPLIT = "updateSplitTenderGroupRequest"
       CIM_VALIDATE_PAYMENT = "validateCustomerPaymentProfileRequest"
       REPORT_GET_BATCH_LIST = "getSettledBatchListRequest"
+      REPORT_GET_UNSETTLED_BATCH_LIST = "getUnsettledTransactionListRequest"
       REPORT_GET_TRANSACTION_LIST = "getTransactionListRequest"
       REPORT_GET_TRANSACTION_DETAILS = "getTransactionDetailsRequest"
     end
@@ -152,6 +153,8 @@ module AuthorizeNet
     # Takes a list of nodes (a Hash is a node, and Array is a list) and recursively builds the XML by pulling
     # values as needed from data.
     def build_nodes(builder, nodeList, data)
+      return if nodeList.nil?
+
       nodeList.each do |node|
         # TODO - ADD COMMENTS HERE
         nodeName = (node.keys.reject {|k| k.to_s[0..0] == '_' }).first
@@ -238,9 +241,9 @@ module AuthorizeNet
       if has_response?
         return nil
       end
-      
+
       fields = @fields
-  
+
       builder = Nokogiri::XML::Builder.new(:encoding => 'utf-8') do |x|
         x.send(@type.to_sym, :xmlns => XML_NAMESPACE) {
           x.merchantAuthentication {
@@ -250,7 +253,7 @@ module AuthorizeNet
           build_nodes(x, self.class.const_get(:FIELDS)[@type], fields)
         }
       end
-      @xml = builder.to_xml 
+      @xml = builder.to_xml
       url = URI.parse(@gateway)
       
       request = Net::HTTP::Post.new(url.path)

@@ -42,6 +42,14 @@ describe AuthorizeNet::Reporting do
     response.should respond_to(:batch_list)
   end
 
+  it "should be able to fetch a list of unsettled batches" do
+    transaction = AuthorizeNet::Reporting::Transaction.new(@api_login, @api_key, :gateway => :sandbox)
+    transaction.should respond_to(:get_unsettled_batch_list)
+    response = transaction.get_unsettled_batch_list
+    response.success?.should be_truthy
+    response.should respond_to(:batch_list)
+  end
+
   it "should be able to fetch a transaction list" do
     transaction = AuthorizeNet::Reporting::Transaction.new(@api_login, @api_key, :gateway => :sandbox)
     transaction.should respond_to(:get_transaction_list)
